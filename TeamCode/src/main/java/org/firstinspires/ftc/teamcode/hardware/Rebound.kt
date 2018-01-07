@@ -165,6 +165,13 @@ class Rebound(private val parentOpMode: OpMode,
         setMotorModes(mode)
     }
 
+    fun pTurn(target: Int, kP: Double) {
+        val error = getOrientation().toDouble() - target
+        if (error > 2.0) {
+            setMotorPowers(lPow = error * kP, rPow = -error * kP)
+        } else {stopMoving()}
+    }
+
     /**
      * Sets the motors to the given modes.
      * @param lfMode left front motor mode

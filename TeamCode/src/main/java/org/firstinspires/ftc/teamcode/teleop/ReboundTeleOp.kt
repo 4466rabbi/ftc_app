@@ -53,8 +53,15 @@ class ReboundTeleOp : OpMode() {
             gamepad2.a -> glyphHandler.openClaw()
             gamepad2.b -> glyphHandler.closeClaw()
             !gamepad2.dpad_up || gamepad2.dpad_down -> glyphHandler.runLift()
+
+            gamepad1.a -> drivetrain.pTurn(90, 0.04)
+            gamepad1.b -> drivetrain.pTurn(0, 0.04)
+            gamepad1.left_trigger > 0 -> drivetrain.arcadeMecanum((-gamepad1.left_trigger).toDouble(), 0.0, 0.0)
+            gamepad1.right_trigger > 0 -> drivetrain.arcadeMecanum(gamepad1.right_trigger.toDouble(), 0.0, 0.0)
         }
+
         glyphHandler.runLift(0.33*gamepad2.left_stick_y)
+
         if (tankStyleControl) {drivetrain.tankMecanum(gamepad1)} else {drivetrain.arcadeMecanum(gamepad1)}
         telemetry.addData("Lift Powers: ", glyphHandler.getMotorPowers())
     }

@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.teamcode.hardware.Rebound
-import kotlin.math.abs
 
 @Autonomous(name = "Blue Far", group = "Encoders")
 //@Disabled
@@ -32,10 +31,12 @@ class EncoderAutoBlueFar : LinearOpMode() {
         }
         drivetrain.stopAndResetEncoders()
         sleep(1000)
-        /*
-        drivetrain.pTurn(90, 0.04)
-        sleep(1000)
-        */
+
+        /*do {
+            drivetrain.pTurn(90, 0.4)
+        } while (drivetrain.getMotorPowers().first() != 0.0)
+        sleep(1000)*/
+
         drivetrain.setTargetRotationStrafe(1.0, -1.0)
         drivetrain.setMotorPowers(0.5)
         while (drivetrain.areMotorsBusy()) {
@@ -53,16 +54,8 @@ class EncoderAutoBlueFar : LinearOpMode() {
         while (opModeIsActive()) {
             sleep(100)
         }
+        opModeIsActive()
         //mediaPlayer.stop()
-    }
-
-    fun Rebound.pTurn(target: Int, kP: Double) {
-        var error = 3.0
-        while (abs(error) > 2.0 && opModeIsActive()) {
-            error = drivetrain.getOrientation().toDouble() - target
-            setMotorPowers(lPow = error * kP, rPow = -error * kP)
-        }
-        drivetrain.stopMoving()
     }
 
 }
