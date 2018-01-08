@@ -2,12 +2,13 @@ package org.firstinspires.ftc.teamcode.auto
 
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.teamcode.hardware.Rebound
 
 @Autonomous(name = "Blue Far", group = "Encoders")
-//@Disabled
+@Disabled
 class EncoderAutoBlueFar : LinearOpMode() {
 
     private lateinit var drivetrain : Rebound

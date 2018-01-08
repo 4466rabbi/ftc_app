@@ -2,13 +2,13 @@ package org.firstinspires.ftc.teamcode.auto
 
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.teamcode.hardware.Rebound
-import kotlin.math.abs
 
 @Autonomous(name = "Blue Near", group = "Encoders")
-//@Disabled
+@Disabled
 class EncoderAutoBlueNear : LinearOpMode() {
 
     private lateinit var drivetrain : Rebound
@@ -54,15 +54,6 @@ class EncoderAutoBlueNear : LinearOpMode() {
             sleep(100)
         }
         //mediaPlayer.stop()
-    }
-
-    fun Rebound.pTurn(target: Int, kP: Double) {
-        var error = 3.0
-        while (abs(error) > 2.0 && opModeIsActive()) {
-            error = drivetrain.getOrientation().toDouble() - target
-            setMotorPowers(lPow = error * kP, rPow = -error * kP)
-        }
-        drivetrain.stopMoving()
     }
 
 }
