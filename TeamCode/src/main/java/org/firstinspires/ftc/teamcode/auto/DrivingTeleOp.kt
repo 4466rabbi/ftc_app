@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleop
+package org.firstinspires.ftc.teamcode.auto
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.hardware.FourBar
 import org.firstinspires.ftc.teamcode.hardware.IntelligentMotionEngine
 
 @TeleOp(name = "Drive TeleOp")
+//@Disabled
 class DrivingTeleOp : LinearOpMode() {
 
     override fun runOpMode() {
@@ -23,11 +24,12 @@ class DrivingTeleOp : LinearOpMode() {
                 gamepad2.right_trigger > 0F -> fourBar.runLift(0.25)
             }
             telemetry.addData("Orientation: ", drivetrain.getOrientation())
-            telemetry.addData("Claw powers: ", fourBar.getMotorPowers())
+            telemetry.addData("Lift powers: ", fourBar.getMotorPowers())
+            telemetry.addData("Claw positions: ", fourBar.getClawPositions())
             telemetry.addData("Encoder Vals: ", drivetrain.getEncoderPositions())
             telemetry.update()
         }
-        drivetrain.arcadeMecanum(0.0, 0.0, 0.0)
+        drivetrain.runMotors(0.0)
     }
 
 }

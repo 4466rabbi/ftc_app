@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop
 
 import com.qualcomm.hardware.bosch.BNO055IMU
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -10,7 +11,7 @@ import org.firstinspires.ftc.teamcode.hardware.Rebound
 import java.util.*
 
 @TeleOp(name = "Rebound TeleOp")
-//@Disabled
+@Disabled
 class ReboundTeleOp : OpMode() {
 
     private lateinit var drivetrain : Rebound

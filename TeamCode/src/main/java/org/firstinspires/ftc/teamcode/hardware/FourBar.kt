@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Servo
 
-enum class LiftState {GOING_UP, GOING_DOWN, STATIONARY_MIDWAY, STATIONARY_DOWN, STATIONARY_UP}
+enum class LiftState {GOING_UP, GOING_DOWN, STATIONARY,}
 enum class ClawState {OPEN, CLOSED, MECHANISM_HOLD, FOLDED, STARTING}
 
 class FourBar(parentOpMode: OpMode) {
@@ -34,7 +34,7 @@ class FourBar(parentOpMode: OpMode) {
     /**
      * @return a List<Double> of servo positions in the order [left, right].
      */
-    fun getServoPositions() : List<Double> = listOf(claw_left.position, claw_right.position)
+    fun getClawPositions() : List<Double> = listOf(claw_left.position, claw_right.position)
 
     /**
      * Runs a state-machine controller for the lift and claw.
@@ -44,16 +44,12 @@ class FourBar(parentOpMode: OpMode) {
     fun startStateControl(liftState: LiftState, clawState: ClawState) {
         // lift control loop - would be better with encoders
         when (liftState) {
-            // normally, a proportional loop to run the lift towards the top, but needs encoders
+            // run the lift upwards
             LiftState.GOING_UP -> runLift(0.25)
-            // normally, a proportional loop to run the lift towards the bottom, but needs encoders
-            LiftState.GOING_DOWN -> runLift(0.25)
-            // normally, an instant stop function, but needs encoders
-            LiftState.STATIONARY_MIDWAY -> runLift(0.0)
-            // normally, a run-to-bottom function, but needs encoders
-            LiftState.STATIONARY_DOWN -> runLift(0.0)
-            // normally, a run-to-top function, but needs encoders
-            LiftState.STATIONARY_UP -> runLift(0.0)
+            // run the lift downwards
+            LiftState.GOING_DOWN -> runLift(-0.25)
+            // an instant-stop function
+            LiftState.STATIONARY -> runLift(0.0)
         }
         // claw control loop
         when (clawState) {
@@ -70,7 +66,7 @@ class FourBar(parentOpMode: OpMode) {
      * @see startStateControl
      */
     fun startStateControl(gamepad: Gamepad) {
-        var liftState = LiftState.STATIONARY_MIDWAY
+        var liftState = LiftState.STATIONARY
         var clawState = ClawState.STARTING
         when {
             gamepad.left_trigger > 0F -> liftState = LiftState.GOING_DOWN
@@ -79,12 +75,6 @@ class FourBar(parentOpMode: OpMode) {
             gamepad.b -> clawState = ClawState.CLOSED
         }
         startStateControl(liftState, clawState)
-    }
-
-    fun setClaw(position: Double) {
-        // TODO find and implement position variance in the claw
-        claw_left.position = position
-        claw_right.position = position
     }
 
     @Deprecated(replaceWith = ReplaceWith("setClaw(position)"), message = "Method no longer in use")
@@ -103,4 +93,11 @@ class FourBar(parentOpMode: OpMode) {
         lift_left.power = power
         lift_right.power = power
     }
+
+    fun setClaw(position: Double) {
+        // TODO find and implement position variance in the claw
+        claw_left.position = position
+        claw_right.position = position
+    }
+
 }

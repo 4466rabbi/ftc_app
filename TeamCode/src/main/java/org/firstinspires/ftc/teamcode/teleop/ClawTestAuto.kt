@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.teleop
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.Servo
 
 @Autonomous(name = "Claw Test Env.")
-class ClawTestTeleOp : LinearOpMode() {
+@Disabled
+class ClawTestAuto : LinearOpMode() {
     override fun runOpMode() {
         val claw_left: Servo = hardwareMap.servo.get("claw_left")
         val claw_right: Servo = hardwareMap.servo.get("claw_right")
