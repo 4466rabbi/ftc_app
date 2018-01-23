@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
-import org.firstinspires.ftc.teamcode.hardware.ClawLift
+import org.firstinspires.ftc.teamcode.hardware.FourBar
 import org.firstinspires.ftc.teamcode.hardware.Rebound
 import java.util.*
 
@@ -14,7 +14,7 @@ import java.util.*
 class ReboundTeleOp : OpMode() {
 
     private lateinit var drivetrain : Rebound
-    private lateinit var glyphHandler: ClawLift
+    private lateinit var glyphHandler: FourBar
     private var tankStyleControl : Boolean = false
 
     override fun init() {
@@ -39,8 +39,7 @@ class ReboundTeleOp : OpMode() {
         val lift_right : DcMotor = hardwareMap.dcMotor.get("lift_right")
         val claw_left : Servo = hardwareMap.servo.get("claw_left")
         val claw_right : Servo = hardwareMap.servo.get("claw_right")
-        glyphHandler = ClawLift(this, lift_left, lift_right, claw_left, claw_right)
-        glyphHandler.initialize()
+        glyphHandler = FourBar(this)
     }
 
     override fun loop() {
@@ -50,8 +49,8 @@ class ReboundTeleOp : OpMode() {
         when {
             gamepad2.dpad_up -> glyphHandler.runLift(0.25)
             gamepad2.dpad_down -> glyphHandler.runLift(-0.25)
-            gamepad2.a -> glyphHandler.openClaw()
-            gamepad2.b -> glyphHandler.closeClaw()
+            gamepad2.a -> glyphHandler.setClaw(0.8)
+            gamepad2.b -> glyphHandler.setClaw(0.4)
             !gamepad2.dpad_up || gamepad2.dpad_down -> glyphHandler.runLift()
 
             gamepad1.a -> drivetrain.pTurn(90, 0.04)
