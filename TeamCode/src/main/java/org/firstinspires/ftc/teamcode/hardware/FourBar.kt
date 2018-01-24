@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.hardware
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.Gamepad
-import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.*
+import com.qualcomm.robotcore.util.Range
+import kotlin.math.max
+import kotlin.math.min
 
 enum class LiftState {GOING_UP, GOING_DOWN, STATIONARY,}
 enum class ClawState {OPEN, CLOSED, MECHANISM_HOLD, FOLDED, STARTING}
@@ -18,8 +19,8 @@ class FourBar(parentOpMode: OpMode) {
     init {
         lift_left.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         lift_right.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        //lift_right.direction = DcMotorSimple.Direction.REVERSE
-        claw_left.direction = Servo.Direction.REVERSE
+        lift_right.direction = DcMotorSimple.Direction.REVERSE
+        //claw_left.direction = Servo.Direction.REVERSE
         claw_right.direction = Servo.Direction.REVERSE
         parentOpMode.telemetry.addLine("4466 FourBar v1.2")
         parentOpMode.telemetry.addLine("Running as expected.")
@@ -96,8 +97,15 @@ class FourBar(parentOpMode: OpMode) {
 
     fun setClaw(position: Double) {
         // TODO find and implement position variance in the claw
-        claw_left.position = position
-        claw_right.position = position
+        // 1.0 right = 0.61 left
+        // 0.39 right = 0.0 left
+        claw_left.position = position.scale(0.0, 1.0, 0.0, 0.51)
+        claw_right.position = position.scale(0.0, 1.0, 0.29, 1.0)
     }
 
+    fun Double.scale(x1: Double, x2: Double, y1: Double, y2: Double) : Double {
+        val a = (y1 - y2) / (x1 - x2)
+        val b = y1 - x1 * (y1 - y2) / (x1 - x2)
+        return a * this + b
+    }
 }

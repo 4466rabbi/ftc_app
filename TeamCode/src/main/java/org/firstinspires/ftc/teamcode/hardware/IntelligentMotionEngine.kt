@@ -3,10 +3,7 @@ package org.firstinspires.ftc.teamcode.hardware
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.Gamepad
+import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
@@ -32,8 +29,11 @@ class IntelligentMotionEngine(private val parentOpMode: OpMode) {
     private val WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * PI
 
     init {
-        rf.direction = DcMotorSimple.Direction.REVERSE
-        setMotorModes(DcMotor.RunMode.RUN_USING_ENCODER)
+        lb.direction = DcMotorSimple.Direction.REVERSE
+        //rb.direction = DcMotorSimple.Direction.REVERSE
+        //rf.direction = DcMotorSimple.Direction.REVERSE
+        //rb.direction = DcMotorSimple.Direction.REVERSE
+        setMotorModes(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
         setZeroPowerBehaviors(DcMotor.ZeroPowerBehavior.FLOAT)
         // imu setup
         val parameters: BNO055IMU.Parameters = BNO055IMU.Parameters()
@@ -70,7 +70,7 @@ class IntelligentMotionEngine(private val parentOpMode: OpMode) {
         val lfPow : Double = vtY + vtX - vR
         val rfPow : Double = vtY - vtX + vR
         val lbPow : Double = vtY - vtX - vR
-        val rbPow : Double = -(vtY + vtX + vR)
+        val rbPow : Double = vtY + vtX + vR
         // get the max wheel power
         val wMax : Double = max(lfPow, max(rfPow, max(lbPow, rbPow)))
         //telemetry.addData("Max Speed: ", wMax)
@@ -93,7 +93,8 @@ class IntelligentMotionEngine(private val parentOpMode: OpMode) {
             Math.pow(gamepad.left_stick_y.toDouble(), 3.0),
             Math.pow(gamepad.right_stick_x.toDouble(), 3.0))
 
-    /**
+
+        /**
      * Sets motor powers based on an Inverse Kinematics algorithm designed to act similarly to a tank drive system
      * when used with a Gamepad.
      * @param left_y the left joystick Y axis
@@ -121,7 +122,7 @@ class IntelligentMotionEngine(private val parentOpMode: OpMode) {
             Math.pow(gamepad.left_trigger.toDouble(), 3.0),
             Math.pow(gamepad.right_trigger.toDouble(), 3.0))
 
-    fun encoderCountDrive(target: Int, kP: Double = 0.03) {
+    fun encoderCountDrive(target: Int, kP: Double = 0.003) {
         resetEncoders()
         var error = getEncoderPositions().average().toInt() - target
         while (abs(error) > 2) {
@@ -132,17 +133,17 @@ class IntelligentMotionEngine(private val parentOpMode: OpMode) {
         runMotors(0.0)
         resetEncoders()
     }
-    fun encoderRotationDrive(rTarget: Double, kP: Double = 0.03) {
+    fun encoderRotationDrive(rTarget: Double, kP: Double = 0.003) {
         resetEncoders()
         val target = rTarget * COUNTS_PER_ROTATION
         encoderCountDrive(target.toInt(), kP)
     }
-    fun encoderInchDrive(dTarget: Double, kP: Double = 0.03) {
+    fun encoderInchDrive(dTarget: Double, kP: Double = 0.003) {
         val rTarget = dTarget / WHEEL_CIRCUMFERENCE
         encoderRotationDrive(rTarget, kP)
     }
 
-    fun encoderCountStrafe(target: Int, kP: Double = 0.03) {
+    fun encoderCountStrafe(target: Int, kP: Double = 0.003) {
         resetEncoders()
         var error = getEncoderPositions().average().toInt() - target
         while (abs(error) > 2) {
@@ -154,7 +155,7 @@ class IntelligentMotionEngine(private val parentOpMode: OpMode) {
         runMotors(0.0)
         resetEncoders()
     }
-    fun encoderRotationStrafe(rTarget: Double, kP: Double = 0.03) {
+    fun encoderRotationStrafe(rTarget: Double, kP: Double = 0.003) {
         val target = rTarget * COUNTS_PER_ROTATION
         encoderCountStrafe(target.toInt(), kP)
     }
@@ -197,4 +198,28 @@ class IntelligentMotionEngine(private val parentOpMode: OpMode) {
         rb.zeroPowerBehavior = behavior
     }
 
+    fun setTargetPositions(targetPos: Int) {
+        resetEncoders()
+        setMotorModes(DcMotor.RunMode.RUN_TO_POSITION)
+        lf.targetPosition = targetPos
+        lb.targetPosition = targetPos
+        rf.targetPosition = targetPos
+        rb.targetPosition = targetPos
+    }
+
+    fun areMotorsBusy() : Boolean  = lf.isBusy || lb.isBusy || rf.isBusy || rb.isBusy
+
+    fun setPID(kP: Double, kD: Double, kI: Double) {
+        val coefficients : PIDCoefficients = PIDCoefficients(kP, kI, kD)
+        lf.setPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION, coefficients)
+        lb.setPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION, coefficients)
+        rf.setPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION, coefficients)
+        rb.setPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION, coefficients)
+    }
+
+    fun getPID() : List<PIDCoefficients> =
+            listOf(lf.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION),
+                    rf.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION),
+                    lb.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION),
+                    rf.getPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION))
 }
